@@ -1,6 +1,14 @@
 const sqlite3 = require("sqlite3").verbose();
-const bcrypt = require("bcrypt");
-const db = new sqlite3.Database("./database/db.sqlite");
+const fs = require("fs");
+const path = require("path");
+
+const dbDir = path.join(__dirname, "../database");
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const dbPath = path.join(dbDir, "db.sqlite");
+const db = new sqlite3.Database(dbPath);
 
 db.run(`
 CREATE TABLE IF NOT EXISTS users (
