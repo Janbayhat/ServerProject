@@ -1,0 +1,34 @@
+const sqlite3 = require("sqlite3").verbose();
+const db = new sqlite3.Database("./database/db.sqlite");
+
+db.run(`
+CREATE TABLE IF NOT EXISTS favorites (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  video_id TEXT,
+  title TEXT,
+  thumbnail TEXT
+)`);
+
+exports.getByUser = (userId) =>
+  new Promise((resolve) => {
+    db.all(
+      "SELECT * FROM favorites WHERE user_id=?",
+      [userId],
+      (err, rows) => resolve(rows)
+    );
+  });
+
+exports.add = (userId, videoId, title, thumbnail) =>
+  new Promise((resolve) => {
+    db.run(
+      "INSERT INTO favorites (user_id, video_id, title, thumbnail) VALUES (?,?,?,?)",
+      [userId, videoId, title, thumbnail],
+      () => resolve()
+    );
+  });
+
+exports.remove = (id) =>
+  new Promise((resolve) => {
+    db.run("DELETE FROM favorites WHERE id=?", [id], () => resolve());
+  });
